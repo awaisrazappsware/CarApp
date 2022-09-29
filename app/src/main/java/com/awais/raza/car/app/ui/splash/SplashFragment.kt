@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import com.awais.raza.car.app.R
 import com.awais.raza.car.app.databinding.FragmentSplashBinding
 
@@ -25,5 +27,17 @@ class SplashFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
+        navigateDashboard()
+
+    }
+
+    private fun navigateDashboard() {
+        lifecycleScope.launchWhenStarted {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
+                R.id.action_splash_to_dashboardFragment
+            )
+        }
     }
 }
