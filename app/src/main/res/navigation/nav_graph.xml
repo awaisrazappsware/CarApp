@@ -20,5 +20,46 @@
         android:id="@+id/dashboardFragment"
         android:name="com.awais.raza.car.app.ui.dashboard.DashboardFragment"
         android:label="fragment_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_dashboardFragment_to_recordFragment"
+            app:destination="@id/recordFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_completedFragment"
+            app:destination="@id/completedFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_dueFragment"
+            app:destination="@id/dueFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recordFragment"
+        android:name="com.awais.raza.car.app.ui.record.RecordFragment"
+        android:label="fragment_record"
+        tools:layout="@layout/fragment_record" />
+    <fragment
+        android:id="@+id/completedFragment"
+        android:name="com.awais.raza.car.app.ui.completed.CompletedFragment"
+        android:label="fragment_completed"
+        tools:layout="@layout/fragment_completed" >
+        <action
+            android:id="@+id/action_completedFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dueFragment"
+        android:name="com.awais.raza.car.app.ui.due.DueFragment"
+        android:label="fragment_due"
+        tools:layout="@layout/fragment_due" >
+        <action
+            android:id="@+id/action_dueFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="com.awais.raza.car.app.ui.edit.EditFragment"
+        android:label="fragment_edit"
+        tools:layout="@layout/fragment_edit" />
 </navigation>

@@ -1,20 +1,21 @@
-package com.awais.raza.car.app.ui.dashboard
+package com.awais.raza.car.app.ui.completed
 
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import com.awais.raza.car.app.R
 import com.awais.raza.car.app.adapter.RecordsAdapter
 import com.awais.raza.car.app.database.RecordsDatabase
-import com.awais.raza.car.app.databinding.FragmentDashboardBinding
+import com.awais.raza.car.app.databinding.FragmentCompletedBinding
+import com.awais.raza.car.app.databinding.FragmentSplashBinding
 import com.awais.raza.car.app.listener.OnRecordClickListener
 import com.awais.raza.car.app.model.Records
 import kotlinx.coroutines.CoroutineScope
@@ -25,11 +26,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class DashboardFragment : Fragment(), OnRecordClickListener {
+class CompletedFragment : Fragment() ,OnRecordClickListener{
 
-    private val TAG = "DashboardFragment"
-    private lateinit var binding: FragmentDashboardBinding
-
+    private lateinit var binding : FragmentCompletedBinding
     private lateinit var recordsAdapter: RecordsAdapter
     private val recordsList: ArrayList<Records> = ArrayList()
 
@@ -39,7 +38,7 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentDashboardBinding.inflate(inflater, container, false)
+        binding = FragmentCompletedBinding.inflate(inflater, container, false)
         return binding.root
 
     }
@@ -47,8 +46,12 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbarDash.backBtn.visibility = View.GONE
-        binding.toolbarDash.title.text = "All Records"
+
+        binding.toolbarCompleted.title.text = "Completed Records"
+
+        binding.toolbarCompleted.backBtn.setOnClickListener {
+            navigateDashboard()
+        }
 
         val recordsDatabase: RecordsDatabase =
             RecordsDatabase.getDatabase(requireContext().applicationContext)
@@ -60,16 +63,7 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
 
             for (item in list) {
 
-                val sdf = SimpleDateFormat("dd-MM-yyyy")
-                val strDate = sdf.parse(item.rEndDate)
-
-                if (Date().after(strDate)) {
-                    Log.d(TAG, "onViewCreated: due")
-
-                    item.rStatus = "Due"
-                    recordsList.add(item)
-                } else if (Date().before(strDate)) {
-                    Log.d(TAG, "onViewCreated: under")
+                if (item.rStatus=="Completed") {
                     recordsList.add(item)
                 }
             }
@@ -80,95 +74,34 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
             }
         }
 
-        binding.addBtn.setOnClickListener {
-            navigateRecord()
-        }
-        binding.completedRecords.setOnClickListener {
-            navigateCompleted()
-        }
-        binding.dueRecords.setOnClickListener {
-            navigateDue()
-        }
+      //  navigateDashboard()
 
-
-        val onBackPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                // Handle the back button event
-                val myQuittingDialogBox: AlertDialog =
-                    AlertDialog.Builder(requireContext()) // set message, title, and icon
-                        .setTitle("Exit")
-                        .setMessage("Do you want to Exit")
-                        .setPositiveButton(
-                            "Delete",
-                            DialogInterface.OnClickListener { dialog, whichButton -> //your deleting code
-                                dialog.dismiss()
-                                requireActivity().finish()
-                            })
-                        .setNegativeButton("cancel",
-                            DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
-                        .create()
-
-                myQuittingDialogBox.show()
-            }
-        }
-        requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), onBackPressedCallback)
     }
 
-    //1Day
-//Due
     private fun updateRecycler() {
         recordsAdapter = RecordsAdapter(requireContext(), recordsList, this)
         binding.recyclerViewAll.adapter = recordsAdapter
     }
 
 
-    private fun navigateRecord() {
+    private fun navigateDashboard() {
         lifecycleScope.launchWhenStarted {
-            Navigation.findNavController(
-                requireActivity(),
-                com.awais.raza.car.app.R.id.fragment_container
-            ).navigate(
-                com.awais.raza.car.app.R.id.action_dashboardFragment_to_recordFragment
-            )
+            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigateUp()
         }
     }
-
-    private fun navigateCompleted() {
-        lifecycleScope.launchWhenStarted {
-            Navigation.findNavController(
-                requireActivity(),
-                com.awais.raza.car.app.R.id.fragment_container
-            ).navigate(
-                com.awais.raza.car.app.R.id.action_dashboardFragment_to_completedFragment
-            )
-        }
-    }
-
-    private fun navigateDue() {
-        lifecycleScope.launchWhenStarted {
-            Navigation.findNavController(
-                requireActivity(),
-                com.awais.raza.car.app.R.id.fragment_container
-            ).navigate(
-                com.awais.raza.car.app.R.id.action_dashboardFragment_to_dueFragment
-            )
-        }
-    }
-
     private fun navigateEdit(bundle: Bundle) {
         lifecycleScope.launchWhenStarted {
             Navigation.findNavController(
                 requireActivity(),
                 com.awais.raza.car.app.R.id.fragment_container
             ).navigate(
-                com.awais.raza.car.app.R.id.action_dashboardFragment_to_editFragment, bundle
+                com.awais.raza.car.app.R.id.action_completedFragment_to_editFragment, bundle
             )
         }
     }
 
 
     override fun onRecordClick(records: Records) {
-        Log.d(TAG, "onRecordClick: ${records.rName}")
         val bundle = bundleOf(
             "rRegNO" to records.rRegNO,
             "rName" to records.rName,
@@ -180,7 +113,6 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
 
         navigateEdit(bundle)
     }
-
     override fun onRecordDelete(records: Records) {
 
 

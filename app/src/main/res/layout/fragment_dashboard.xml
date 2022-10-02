@@ -16,6 +16,7 @@
         android:id="@+id/recyclerViewAll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/bottomBar"
         app:layout_constraintTop_toBottomOf="@+id/toolbarDash"
         tools:listitem="@layout/item_rocord" />
@@ -26,24 +27,53 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bottom_bar"
-        android:elevation="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="parent">
 
 
-
-
-        <ImageView
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
+        <TextView
+            android:id="@+id/dueRecords"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_20sdp"
             android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_10sdp"
-            android:src="@drawable/ic_launcher_background"
+            android:text="Due Records"
+            android:textColor="@color/greyText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:drawableTopCompat="@drawable/ic_upcoming" />
+
+
+        <TextView
+            android:id="@+id/completedRecords"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:text="Completed"
+            android:textColor="@color/greyText"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:drawableTopCompat="@drawable/ic_completed" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/gold"
+        android:elevation="@dimen/_10sdp"
+        android:src="@drawable/ic_add"
+        app:layout_constraintBottom_toTopOf="@+id/bottomBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/bottomBar"
+        app:tint="@android:color/white" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

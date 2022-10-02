@@ -1,6 +1,7 @@
 package com.awais.raza.car.app.ui.splash
 
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +30,9 @@ class SplashFragment : Fragment() {
 
 
 
-        navigateDashboard()
+        Handler().postDelayed(Runnable {
+            navigateDashboard()
+        },4000)
 
     }
 
