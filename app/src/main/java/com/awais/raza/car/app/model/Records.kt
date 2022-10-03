@@ -15,8 +15,12 @@ data class Records(
     val rMillage: String,
     @ColumnInfo(name = "rStatus")
     var rStatus: String,
+    @ColumnInfo(name = "rCategory")
+    var rCategory: String,
     @ColumnInfo(name = "rStartDate")
     val rStartDate: String,
     @ColumnInfo(name = "rEndDate")
     val rEndDate: String,
+    @ColumnInfo(name = "rNote")
+    val rNote: String,
 )

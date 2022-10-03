@@ -47,6 +47,18 @@ class RecordsAdapter(
             holder.binding.mainBg.setBackgroundResource(R.drawable.recordred)
         }
 
+        if(mList[position].rCategory=="Sedan"){
+            holder.binding.image.setImageResource(R.drawable.sedan)
+        }else if(mList[position].rCategory=="Crossover"){
+            holder.binding.image.setImageResource(R.drawable.kia)
+        }else if(mList[position].rCategory=="Hatchback"){
+            holder.binding.image.setImageResource(R.drawable.hatchback)
+        }else if(mList[position].rCategory=="Suv"){
+            holder.binding.image.setImageResource(R.drawable.suv)
+        }else if(mList[position].rCategory=="Others"){
+            holder.binding.image.setImageResource(R.drawable.other)
+        }
+
         holder.itemView.setOnClickListener{
             onRecordClickListener.onRecordClick(mList[position])
         }

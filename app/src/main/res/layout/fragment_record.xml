@@ -129,6 +129,31 @@
 
 
     <TextView
+        android:id="@+id/txtCategories"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:text="Categories: "
+        android:textSize="@dimen/_14ssp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/spnCategories"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spnCategories" />
+
+    <Spinner
+        android:id="@+id/spnCategories"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:textSize="@dimen/_14ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtCategories"
+        app:layout_constraintTop_toBottomOf="@+id/spnStatus" />
+
+
+    <TextView
         android:id="@+id/txtStartDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -152,7 +177,7 @@
         android:textSize="@dimen/_14ssp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtStartDate"
-        app:layout_constraintTop_toBottomOf="@+id/spnStatus" />
+        app:layout_constraintTop_toBottomOf="@+id/spnCategories" />
 
     <TextView
         android:id="@+id/txtEndDate"
@@ -182,6 +207,34 @@
         app:layout_constraintTop_toBottomOf="@+id/edtStartDate" />
 
 
+    <TextView
+        android:id="@+id/txtNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:inputType="textPersonName"
+        android:text="Note: "
+        android:textSize="@dimen/_14ssp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/edtNote"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edtNote" />
+
+    <EditText
+        android:id="@+id/edtNote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:inputType="textMultiLine"
+        android:paddingStart="@dimen/_5sdp"
+        android:hint="note"
+        android:textSize="@dimen/_14ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtNote"
+        app:layout_constraintTop_toBottomOf="@+id/edtEndDate" />
+
+
     <Button
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
@@ -190,5 +243,5 @@
         android:text="Save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtEndDate" />
+        app:layout_constraintTop_toBottomOf="@+id/edtNote" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +18,10 @@ import com.awais.raza.car.app.database.RecordsDatabase
 import com.awais.raza.car.app.databinding.FragmentDueBinding
 import com.awais.raza.car.app.listener.OnRecordClickListener
 import com.awais.raza.car.app.model.Records
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +36,7 @@ class DueFragment : Fragment(), OnRecordClickListener {
     private lateinit var recordsAdapter: RecordsAdapter
     private val recordsList: ArrayList<Records> = ArrayList()
 
+    private val TAG="DueFragment"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,31 +56,79 @@ class DueFragment : Fragment(), OnRecordClickListener {
         binding.toolbarDuw.backBtn.setOnClickListener {
             navigateDashboard()
         }
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Handle the back button event
+                navigateDashboard()
+            }
+        }
+        requireActivity().getOnBackPressedDispatcher()
+            .addCallback(requireActivity(), onBackPressedCallback)
 
         val recordsDatabase: RecordsDatabase =
             RecordsDatabase.getDatabase(requireContext().applicationContext)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val list: List<Records> = recordsDatabase.recordsDao().readAllData()
-            recordsList.clear()
+
+        recordsList.clear()
+
+        val firebaseDatabase = FirebaseDatabase.getInstance()
+        val databaseReference = firebaseDatabase.getReference("Records")
 
 
-            for (item in list) {
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (datas in dataSnapshot.children) {
 
-                val sdf = SimpleDateFormat("dd-MM-yyyy")
-                val strDate = sdf.parse(item.rEndDate)
+                        val key = datas.key
 
-                if (Date().after(strDate)) {
-                    item.rStatus = "Due"
-                    recordsList.add(item)
+                        Log.d(TAG, "onDataChange: $key")
+                        val rStatus = datas.child("rstatus").value.toString()
+
+                        val sdf = SimpleDateFormat("dd-MM-yyyy")
+                        val strDate = sdf.parse(datas.child("rendDate").value.toString())
+                        if (Date().after(strDate)&&rStatus != "Completed") {
+                            Log.d(TAG, "onViewCreated: due")
+                            recordsList.add(Records(
+                                datas.child("rregNO").value.toString(),
+                                datas.child("rname").value.toString(),
+                                datas.child("rmillage").value.toString(),
+                                "Due",
+                                datas.child("rcategory").value.toString(),
+                                datas.child("rstartDate").value.toString(),
+                                datas.child("rendDate").value.toString(),
+                                datas.child("rnote").value.toString()
+                            ))
+                        }
+
+                    }
+
+                    updateRecycler()
+
                 }
-            }
 
-            withContext(Dispatchers.Main)
-            {
-                updateRecycler()
-            }
-        }
+                override fun onCancelled(databaseError: DatabaseError) {}
+            })
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val list: List<Records> = recordsDatabase.recordsDao().readAllData()
+//            recordsList.clear()
+//
+//
+//            for (item in list) {
+//
+//                val sdf = SimpleDateFormat("dd-MM-yyyy")
+//                val strDate = sdf.parse(item.rEndDate)
+//
+//                if (Date().after(strDate)) {
+//                    item.rStatus = "Due"
+//                    recordsList.add(item)
+//                }
+//            }
+//
+//            withContext(Dispatchers.Main)
+//            {
+//                updateRecycler()
+//            }
+//        }
 
         // navigateDashboard()
 
@@ -109,9 +163,11 @@ class DueFragment : Fragment(), OnRecordClickListener {
             "rRegNO" to records.rRegNO,
             "rName" to records.rName,
             "rMillage" to records.rMillage,
+            "rCategory" to records.rCategory,
             "rStatus" to records.rStatus,
             "rStartDate" to records.rStartDate,
-            "rEndDate" to records.rEndDate
+            "rEndDate" to records.rEndDate,
+            "rNote" to records.rNote
         )
 
         navigateEdit(bundle)
@@ -129,16 +185,31 @@ class DueFragment : Fragment(), OnRecordClickListener {
                     "Delete",
                     DialogInterface.OnClickListener { dialog, whichButton -> //your deleting code
                         dialog.dismiss()
-                        val recordsDatabase: RecordsDatabase =
-                            RecordsDatabase.getDatabase(requireContext().applicationContext)
+//                        val recordsDatabase: RecordsDatabase =
+//                            RecordsDatabase.getDatabase(requireContext().applicationContext)
 
-                        CoroutineScope(Dispatchers.IO).launch {
-                            recordsDatabase.recordsDao().deleteRecord(records)
-                            withContext(Dispatchers.Main) {
-                                recordsList.remove(records)
-                                recordsAdapter.notifyDataSetChanged()
-                            }
-                        }
+//                        CoroutineScope(Dispatchers.IO).launch {
+//                            recordsDatabase.recordsDao().deleteRecord(records)
+//                            withContext(Dispatchers.Main) {
+
+                        val firebaseDatabase = FirebaseDatabase.getInstance()
+                        val databaseReference = firebaseDatabase.getReference("Records")
+
+                        databaseReference.orderByChild("rregNO").equalTo(records.rRegNO)
+                            .addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                    for (data in dataSnapshot.children) {
+                                        data.ref.removeValue()
+                                    }
+
+                                    recordsList.remove(records)
+                                    recordsAdapter.notifyDataSetChanged()
+                                }
+
+                                override fun onCancelled(databaseError: DatabaseError) {}
+                            })
+//                            }
+//                        }
                     })
                 .setNegativeButton("cancel",
                     DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })

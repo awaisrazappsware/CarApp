@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "269585222149",
+    "project_id": "carapp-26168",
+    "storage_bucket": "carapp-26168.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:269585222149:android:94eff8cd8fed9e9cd1aa6c",
+        "android_client_info": {
+          "package_name": "com.awais.raza.car.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "269585222149-mq43hkg2nfc8fbrkk9u8mqm5r9783skq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA37jwo9x9SPFTayzAyM1T-g7zd-Ue5s0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "269585222149-mq43hkg2nfc8fbrkk9u8mqm5r9783skq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

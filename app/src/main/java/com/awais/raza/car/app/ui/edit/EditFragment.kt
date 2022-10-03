@@ -1,32 +1,34 @@
 package com.awais.raza.car.app.ui.edit
 
+import android.R
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import com.awais.raza.car.app.database.RecordsDatabase
 import com.awais.raza.car.app.databinding.FragmentEditBinding
 import com.awais.raza.car.app.model.Records
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.util.*
 
 
-class EditFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class EditFragment : Fragment()  {
 
     private lateinit var binding: FragmentEditBinding
-    var status = arrayOf("New", "Renew", "Completed")
+    var status = arrayOf("New", "Renew", "Due","Completed")
 
     private var sYear = 0
     private var sMonth = 0
@@ -39,6 +41,14 @@ class EditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var endDate: String? = null
     private var startDate: String? = null
     private var pos = 0
+
+    var category = arrayOf("Sedan", "Crossover","Hatchback","Suv","Others")
+
+    private var pos1 = 0
+
+    private val TAG="EditFragment"
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,15 +64,59 @@ class EditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
 
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Handle the back button event
+                navigateDashboard()
+            }
+        }
+        requireActivity().getOnBackPressedDispatcher()
+            .addCallback(requireActivity(), onBackPressedCallback)
 
-        binding.spnStatus.onItemSelectedListener = this
-        val aa = ArrayAdapter<Any?>(requireContext(), android.R.layout.simple_spinner_item, status)
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        binding.spnStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                pos = position
+            }
+
+        }
+
+        binding.spnCategories.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                pos1 = position
+            }
+
+        }
+        val aa = ArrayAdapter<Any?>(requireContext(), R.layout.simple_spinner_item, status)
+        val cc = ArrayAdapter<Any?>(requireContext(), R.layout.simple_spinner_item, category)
+        aa.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        cc.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         //Setting the ArrayAdapter data on the Spinner
         //Setting the ArrayAdapter data on the Spinner
         binding.spnStatus.adapter = aa
+        binding.spnCategories.adapter = cc
 
 
+
+        Log.d(TAG, "onViewCreated: ${arguments?.getString("rStatus")}")
+        Log.d(TAG, "onViewCreated: ${arguments?.getString("rCategory")}")
+
+
+        val spinnerPosition: Int = aa.getPosition(arguments?.getString("rStatus"))
+        binding.spnStatus.setSelection(spinnerPosition)
+
+        val spinnePosition: Int = cc.getPosition(arguments?.getString("rCategory"))
+        binding.spnCategories.setSelection(spinnePosition)
+
+        binding.edtNote.setText(arguments?.getString("rNote"))
         binding.edtRegistrationNumber.setText(arguments?.getString("rRegNO"))
         binding.edtName.setText(arguments?.getString("rName"))
         binding.edtMillage.setText(arguments?.getString("rMillage"))
@@ -125,10 +179,10 @@ class EditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         binding.btnSave.setOnClickListener {
 
-            val recordsDatabase: RecordsDatabase =
-                RecordsDatabase.getDatabase(requireContext().applicationContext)
+//            val recordsDatabase: RecordsDatabase =
+//                RecordsDatabase.getDatabase(requireContext().applicationContext)
 
-            CoroutineScope(Dispatchers.IO).launch {
+//            CoroutineScope(Dispatchers.IO).launch {
 
 
                 val record =
@@ -140,24 +194,40 @@ class EditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 binding.edtName.text.toString(),
                                 binding.edtMillage.text.toString(),
                                 status[pos],
+                                category[pos1],
                                 it1,
-                                it2
+                                it2,
+                                binding.edtNote.text.toString()
                             )
                         }
                     }
 
                 record?.let { it1 ->
-                    recordsDatabase.recordsDao().addRecord(it1)
-                    navigateDashboard()
+//                    recordsDatabase.recordsDao().addRecord(it1)
+
+                    val firebaseDatabase = FirebaseDatabase.getInstance()
+                    val databaseReference = firebaseDatabase.getReference("Records")
+
+                    databaseReference.orderByChild("rregNO").equalTo(it1.rRegNO)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for (data in dataSnapshot.children) {
+                                    data.ref.setValue(it1)
+                                }
+                                navigateDashboard()
+                            }
+
+                            override fun onCancelled(databaseError: DatabaseError) {}
+                        })
                 } ?: run {
-                    withContext(Dispatchers.Main) {
+//                    withContext(Dispatchers.Main) {
                         Toast.makeText(
                             requireContext(),
                             "PLease enter Complete Details",
                             Toast.LENGTH_SHORT
                         ).show()
-                    }
-                }
+//                    }
+//                }
             }
         }
 
@@ -172,10 +242,5 @@ class EditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-        pos = p2
-    }
 
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-    }
 }
