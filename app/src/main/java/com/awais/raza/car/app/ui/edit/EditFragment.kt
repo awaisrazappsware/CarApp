@@ -24,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.util.*
 
-
 class EditFragment : Fragment() {
 
     private lateinit var binding: FragmentEditBinding
