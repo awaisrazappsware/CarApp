@@ -31,7 +31,8 @@ class RecordsAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         holder as ItemViewHolder
-        holder.binding.name.text = mList[position].rName
+        holder.binding.name.text = "Name: "+mList[position].rName
+        holder.binding.registration.text = "Reg no: "+mList[position].rRegNO
         holder.binding.millage.text = mList[position].rMillage
         holder.binding.startDate.text = mList[position].rStartDate
         holder.binding.endDate.text = mList[position].rEndDate

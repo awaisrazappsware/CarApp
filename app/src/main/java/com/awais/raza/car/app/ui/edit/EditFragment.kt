@@ -25,10 +25,10 @@ import com.google.firebase.database.ValueEventListener
 import java.util.*
 
 
-class EditFragment : Fragment()  {
+class EditFragment : Fragment() {
 
     private lateinit var binding: FragmentEditBinding
-    var status = arrayOf("New", "Renew", "Due","Completed")
+    var status = arrayOf("New", "Renew", "Due", "Completed")
 
     private var sYear = 0
     private var sMonth = 0
@@ -42,11 +42,11 @@ class EditFragment : Fragment()  {
     private var startDate: String? = null
     private var pos = 0
 
-    var category = arrayOf("Sedan", "Crossover","Hatchback","Suv","Others")
+    var category = arrayOf("Sedan", "Crossover", "Hatchback", "Suv", "Others")
 
     private var pos1 = 0
 
-    private val TAG="EditFragment"
+    private val TAG = "EditFragment"
 
 
     override fun onCreateView(
@@ -63,7 +63,6 @@ class EditFragment : Fragment()  {
         super.onViewCreated(view, savedInstanceState)
 
 
-
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 // Handle the back button event
@@ -74,23 +73,33 @@ class EditFragment : Fragment()  {
             .addCallback(requireActivity(), onBackPressedCallback)
 
 
-        binding.spnStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        binding.spnStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
 
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 pos = position
             }
 
         }
 
-        binding.spnCategories.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        binding.spnCategories.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
 
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 pos1 = position
             }
 
@@ -120,8 +129,8 @@ class EditFragment : Fragment()  {
         binding.edtRegistrationNumber.setText(arguments?.getString("rRegNO"))
         binding.edtName.setText(arguments?.getString("rName"))
         binding.edtMillage.setText(arguments?.getString("rMillage"))
-        startDate= arguments?.getString("rStartDate")
-        endDate= arguments?.getString("rEndDate")
+        startDate = arguments?.getString("rStartDate")
+        endDate = arguments?.getString("rEndDate")
         binding.edtStartDate.text = arguments?.getString("rStartDate")
         binding.edtEndDate.text = arguments?.getString("rEndDate")
 
@@ -185,50 +194,85 @@ class EditFragment : Fragment()  {
 //            CoroutineScope(Dispatchers.IO).launch {
 
 
-                val record =
-
-                    startDate?.let { it1 ->
-                        endDate?.let { it2 ->
-                            Records(
-                                binding.edtRegistrationNumber.text.toString(),
-                                binding.edtName.text.toString(),
-                                binding.edtMillage.text.toString(),
-                                status[pos],
-                                category[pos1],
-                                it1,
-                                it2,
-                                binding.edtNote.text.toString()
-                            )
-                        }
-                    }
-
-                record?.let { it1 ->
-//                    recordsDatabase.recordsDao().addRecord(it1)
+            startDate?.let { it1 ->
+                endDate?.let { it2 ->
 
                     val firebaseDatabase = FirebaseDatabase.getInstance()
                     val databaseReference = firebaseDatabase.getReference("Records")
 
-                    databaseReference.orderByChild("rregNO").equalTo(it1.rRegNO)
-                        .addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                for (data in dataSnapshot.children) {
-                                    data.ref.setValue(it1)
-                                }
-                                navigateDashboard()
-                            }
 
-                            override fun onCancelled(databaseError: DatabaseError) {}
-                        })
+                    databaseReference.child(binding.edtRegistrationNumber.text.toString()).setValue(
+                        Records(
+                            binding.edtRegistrationNumber.text.toString(),
+                            binding.edtName.text.toString(),
+                            binding.edtMillage.text.toString(),
+                            status[pos],
+                            category[pos1],
+                            it1,
+                            it2,
+                            binding.edtNote.text.toString()
+                        )
+                    ).addOnCompleteListener {
+                        navigateDashboard()
+                    }
                 } ?: run {
 //                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            requireContext(),
-                            "PLease enter Complete Details",
-                            Toast.LENGTH_SHORT
-                        ).show()
-//                    }
-//                }
+                    Toast.makeText(
+                        requireContext(),
+                        "PLease enter Complete Details",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } ?: run {
+//                    withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    requireContext(),
+                    "PLease enter Complete Details",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+//                record?.let { it1 ->
+//                    recordsDatabase.recordsDao().addRecord(it1)
+
+
+            /* databaseReference.orderByChild("rregNO").equalTo(it1.rRegNO).addListenerForSingleValueEvent(
+                 object : ValueEventListener {
+                     override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                         Log.d(TAG, "onDataChange: ${dataSnapshot.child("rstatus").value.toString()}")
+
+//                                dataSnapshot.ref.key?.let { it2 -> databaseReference.child(it2).setValue(it1) }
+                         databaseReference.ref.setValue(it1)
+                         navigateDashboard()
+                     }
+
+                     override fun onCancelled(databaseError: DatabaseError) {}
+                 }
+             )*/
+
+
+            /*databaseReference.orderByChild("rregNO").equalTo(it1.rRegNO)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        for (data in dataSnapshot.children) {
+
+                            data.ref.setValue(it1)
+                        }
+                        navigateDashboard()
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {}
+                })*/
+//                } ?: run {
+////                    withContext(Dispatchers.Main) {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "PLease enter Complete Details",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+////                    }
+//                }
+//                }
         }
 
     }

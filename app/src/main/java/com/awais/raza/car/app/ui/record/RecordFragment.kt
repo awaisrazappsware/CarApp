@@ -161,36 +161,44 @@ class RecordFragment : Fragment(){
 //            CoroutineScope(Dispatchers.IO).launch {
 
 
-            val record =
-
-                startDate?.let { it1 ->
-                    endDate?.let { it2 ->
-                        Records(
-                            binding.edtRegistrationNumber.text.toString(),
-                            binding.edtName.text.toString(),
-                            binding.edtMillage.text.toString(),
-                            status[pos],
-                            category[pos1],
-                            it1,
-                            it2,
-                            binding.edtNote.text.toString()
-                        )
+            if ( binding.edtRegistrationNumber.text.isNotEmpty()){
+                val record =
+                    startDate?.let { it1 ->
+                        endDate?.let { it2 ->
+                            Records(
+                                binding.edtRegistrationNumber.text.toString(),
+                                binding.edtName.text.toString(),
+                                binding.edtMillage.text.toString(),
+                                status[pos],
+                                category[pos1],
+                                it1,
+                                it2,
+                                binding.edtNote.text.toString()
+                            )
+                        }
                     }
-                }
 
-            record?.let { it1 ->
-                sendDataToFirebase(it1)
+                record?.let { it1 ->
+                    sendDataToFirebase(it1)
 //                    recordsDatabase.recordsDao().addRecord(it1)
 //                    navigateDashboard()
-            } ?: run {
+                } ?: run {
 //                    withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        requireContext(),
+                        "PLease enter Complete Details",
+                        Toast.LENGTH_SHORT
+                    ).show()
+//                    }
+                }
+            }else{
                 Toast.makeText(
                     requireContext(),
-                    "PLease enter Complete Details",
+                    "PLease Registration No",
                     Toast.LENGTH_SHORT
                 ).show()
-//                    }
             }
+
 //            }
         }
 
@@ -199,7 +207,7 @@ class RecordFragment : Fragment(){
     private fun sendDataToFirebase(records: Records) {
         val firebaseDatabase = FirebaseDatabase.getInstance()
         val databaseReference = firebaseDatabase.getReference("Records")
-        val key: String? = databaseReference.push().getKey()
+//        val key: String? = databaseReference.push().getKey()
 
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -208,14 +216,17 @@ class RecordFragment : Fragment(){
                 // data base reference will sends data to firebase.
 
 
-                key?.let { databaseReference.child(it).setValue(records) }
+
 
 
 
                 // after adding this data we are showing toast message.
                 try {
+//                    key?.let {
+                        databaseReference.child(records.rRegNO).setValue(records)
+                        Toast.makeText(requireContext(), "data added", Toast.LENGTH_SHORT).show()
+//                    }
 
-                    Toast.makeText(requireContext(), "data added", Toast.LENGTH_SHORT).show()
 
 //                        navigateDashboard2()
 

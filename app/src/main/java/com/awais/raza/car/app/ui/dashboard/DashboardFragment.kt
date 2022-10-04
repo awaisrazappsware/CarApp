@@ -289,7 +289,18 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
 //                            recordsDatabase.recordsDao().deleteRecord(records)
 //                            withContext(Dispatchers.Main) {
 
+
                         val firebaseDatabase = FirebaseDatabase.getInstance()
+                        val databaseReference = firebaseDatabase.getReference("Records")
+
+
+                        databaseReference.child(records.rRegNO).removeValue()
+                        recordsList.remove(records)
+
+                        binding.txtTotal.text="No of vehicle : ${recordsList.size}"
+
+                        recordsAdapter.notifyDataSetChanged()
+                        /*val firebaseDatabase = FirebaseDatabase.getInstance()
                         val databaseReference = firebaseDatabase.getReference("Records")
 
                         databaseReference.orderByChild("rregNO").equalTo(records.rRegNO)
@@ -307,7 +318,7 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
                                 }
 
                                 override fun onCancelled(databaseError: DatabaseError) {}
-                            })
+                            })*/
 
 
 //                            }

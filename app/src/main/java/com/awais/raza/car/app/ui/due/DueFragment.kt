@@ -195,19 +195,12 @@ class DueFragment : Fragment(), OnRecordClickListener {
                         val firebaseDatabase = FirebaseDatabase.getInstance()
                         val databaseReference = firebaseDatabase.getReference("Records")
 
-                        databaseReference.orderByChild("rregNO").equalTo(records.rRegNO)
-                            .addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                    for (data in dataSnapshot.children) {
-                                        data.ref.removeValue()
-                                    }
 
-                                    recordsList.remove(records)
-                                    recordsAdapter.notifyDataSetChanged()
-                                }
+                        databaseReference.child(records.rRegNO).removeValue()
+                        recordsList.remove(records)
 
-                                override fun onCancelled(databaseError: DatabaseError) {}
-                            })
+
+                        recordsAdapter.notifyDataSetChanged()
 //                            }
 //                        }
                     })
