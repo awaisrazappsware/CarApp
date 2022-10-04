@@ -18,10 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.awais.raza.car.app.databinding.FragmentEditBinding
 import com.awais.raza.car.app.model.Records
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import java.util.*
 
 class EditFragment : Fragment() {
@@ -198,6 +195,8 @@ class EditFragment : Fragment() {
 
                     val firebaseDatabase = FirebaseDatabase.getInstance()
                     val databaseReference = firebaseDatabase.getReference("Records")
+                    val reportReference = firebaseDatabase.getReference("Reports")
+                    val key: String? = databaseReference.push().getKey()
 
 
                     databaseReference.child(binding.edtRegistrationNumber.text.toString()).setValue(
@@ -211,9 +210,27 @@ class EditFragment : Fragment() {
                             it2,
                             binding.edtNote.text.toString()
                         )
+
                     ).addOnCompleteListener {
-                        navigateDashboard()
+
                     }
+                    key?.let { reportReference.child(it).setValue( Records(
+                        binding.edtRegistrationNumber.text.toString(),
+                        binding.edtName.text.toString(),
+                        binding.edtMillage.text.toString(),
+                        status[pos],
+                        category[pos1],
+                        it1,
+                        it2,
+                        binding.edtNote.text.toString()
+                    )).addOnCompleteListener {
+                        navigateDashboard()
+                    } }
+
+
+
+
+
                 } ?: run {
 //                    withContext(Dispatchers.Main) {
                     Toast.makeText(

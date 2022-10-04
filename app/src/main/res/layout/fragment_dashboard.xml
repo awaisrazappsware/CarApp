@@ -17,24 +17,50 @@
         android:id="@+id/txtTotal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="@dimen/_14ssp"
         android:layout_marginTop="@dimen/_10sdp"
+        android:text="No of vehicle : "
         android:textColor="@color/darkText"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarDash"
-        android:text="No of vehicle : "/>
+        android:textSize="@dimen/_14ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarDash" />
+
+
+    <TextView
+        android:id="@+id/txtSortBy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:text="Sort By: "
+        android:textColor="@color/darkText"
+        android:textSize="@dimen/_14ssp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtTotal" />
+
+    <Spinner
+        android:id="@+id/spnCategories"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:textSize="@dimen/_14ssp"
+        app:layout_constraintBottom_toBottomOf="@+id/txtSortBy"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtSortBy"
+        app:layout_constraintTop_toTopOf="@+id/txtSortBy" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAll"
         android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/_10sdp"
-        app:reverseLayout="true"
-        app:stackFromEnd="true"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_10sdp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/bottomBar"
-        app:layout_constraintTop_toBottomOf="@+id/txtTotal"
+        app:layout_constraintTop_toBottomOf="@+id/txtSortBy"
+        app:reverseLayout="true"
+        app:stackFromEnd="true"
         tools:listitem="@layout/item_rocord" />
 
 
@@ -55,10 +81,25 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:text="Due Records"
             android:textColor="@color/greyText"
+            app:drawableTopCompat="@drawable/ic_upcoming"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:drawableTopCompat="@drawable/ic_upcoming" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/reportRecords"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:text="Reports"
+            android:textColor="@color/greyText"
+            app:drawableTopCompat="@drawable/ic_repoorts"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/completedRecords"
+            app:layout_constraintStart_toEndOf="@+id/dueRecords"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
@@ -70,10 +111,10 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:text="Completed"
             android:textColor="@color/greyText"
+            app:drawableTopCompat="@drawable/ic_completed"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:drawableTopCompat="@drawable/ic_completed" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -84,11 +125,10 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/gold"
         android:elevation="@dimen/_10sdp"
+        android:layout_margin="@dimen/_10sdp"
         android:src="@drawable/ic_add"
         app:layout_constraintBottom_toTopOf="@+id/bottomBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/bottomBar"
         app:tint="@android:color/white" />
 
 

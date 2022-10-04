@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -207,7 +206,9 @@ class RecordFragment : Fragment(){
     private fun sendDataToFirebase(records: Records) {
         val firebaseDatabase = FirebaseDatabase.getInstance()
         val databaseReference = firebaseDatabase.getReference("Records")
-//        val key: String? = databaseReference.push().getKey()
+        val reportReference = firebaseDatabase.getReference("Reports")
+        val key: String? = databaseReference.push().getKey()
+
 
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -224,6 +225,7 @@ class RecordFragment : Fragment(){
                 try {
 //                    key?.let {
                         databaseReference.child(records.rRegNO).setValue(records)
+                    key?.let { reportReference.child(it).setValue(records) }
                         Toast.makeText(requireContext(), "data added", Toast.LENGTH_SHORT).show()
 //                    }
 

@@ -1,5 +1,6 @@
 package com.awais.raza.car.app.ui.dashboard
 
+import android.R
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
@@ -7,12 +8,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.awais.raza.car.app.adapter.RecordsAdapter
 import com.awais.raza.car.app.databinding.FragmentDashboardBinding
 import com.awais.raza.car.app.listener.OnRecordClickListener
@@ -31,10 +33,11 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
     private lateinit var binding: FragmentDashboardBinding
 
     private lateinit var recordsAdapter: RecordsAdapter
-    private val recordsList: ArrayList<Records> = ArrayList()
+    private var recordsList: ArrayList<Records> = ArrayList()
+    var category = arrayOf("All", "Sedan", "Crossover", "Hatchback", "Suv", "Others")
 
 
-    private var totalCount =0
+    private var totalCount = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,19 +59,60 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
 
 //        CoroutineScope(Dispatchers.IO).launch {
 //            val list: List<Records> = recordsDatabase.recordsDao().readAllData()
+
+
+        binding.spnCategories.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+
+                if (category[position] != "All") {
+                    val newList =
+                        recordsList.filter { s -> s.rCategory == category[position] } as ArrayList<Records>
+
+                    Log.d(TAG, "onItemSelected: ${newList}")
+
+                    binding.txtTotal.text = newList.size.toString()
+                    updateRecycler(newList)
+                } else {
+                    updateRecycler(recordsList)
+                    binding.txtTotal.text = recordsList.size.toString()
+                }
+
+            }
+
+        }
+
+        val cc = ArrayAdapter<Any?>(requireContext(), R.layout.simple_spinner_item, category)
+
+        cc.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+
+        binding.spnCategories.adapter = cc
+
+
+        binding.spnCategories.setSelection(0)
+
         recordsList.clear()
 
 
         val firebaseDatabase = FirebaseDatabase.getInstance()
         val databaseReference = firebaseDatabase.getReference("Records")
 
+//        databaseReference.removeValue()
 
         databaseReference
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                    totalCount=dataSnapshot.children.count()
-                    binding.txtTotal.text="No of vehicle : $totalCount"
+                    totalCount = dataSnapshot.children.count()
+                    binding.txtTotal.text = "No of vehicle : $totalCount"
                     for (datas in dataSnapshot.children) {
 
                         val key = datas.key
@@ -79,48 +123,53 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
 
                         val sdf = SimpleDateFormat("dd-MM-yyyy")
                         val strDate = sdf.parse(datas.child("rendDate").value.toString())
-                        if (Date().after(strDate)&&rStatus != "Completed"&&rStatus != "Renew") {
+                        if (Date().after(strDate) && rStatus != "Completed" && rStatus != "Renew") {
                             Log.d(TAG, "onViewCreated: due")
-                            recordsList.add(Records(
-                                datas.child("rregNO").value.toString(),
-                                datas.child("rname").value.toString(),
-                                datas.child("rmillage").value.toString(),
-                                "Due",
-                                datas.child("rcategory").value.toString(),
-                                datas.child("rstartDate").value.toString(),
-                                datas.child("rendDate").value.toString(),
-                                datas.child("rnote").value.toString()
-                            ))
+                            recordsList.add(
+                                Records(
+                                    datas.child("rregNO").value.toString(),
+                                    datas.child("rname").value.toString(),
+                                    datas.child("rmillage").value.toString(),
+                                    "Due",
+                                    datas.child("rcategory").value.toString(),
+                                    datas.child("rstartDate").value.toString(),
+                                    datas.child("rendDate").value.toString(),
+                                    datas.child("rnote").value.toString()
+                                )
+                            )
                         } else if (Date().before(strDate)) {
                             Log.d(TAG, "onViewCreated: under")
-                            recordsList.add(Records(
-                                datas.child("rregNO").value.toString(),
-                                datas.child("rname").value.toString(),
-                                datas.child("rmillage").value.toString(),
-                                datas.child("rstatus").value.toString(),
-                                datas.child("rcategory").value.toString(),
-                                datas.child("rstartDate").value.toString(),
-                                datas.child("rendDate").value.toString(),
-                                datas.child("rnote").value.toString()
-                            ))
-                        }else
-                        {
+                            recordsList.add(
+                                Records(
+                                    datas.child("rregNO").value.toString(),
+                                    datas.child("rname").value.toString(),
+                                    datas.child("rmillage").value.toString(),
+                                    datas.child("rstatus").value.toString(),
+                                    datas.child("rcategory").value.toString(),
+                                    datas.child("rstartDate").value.toString(),
+                                    datas.child("rendDate").value.toString(),
+                                    datas.child("rnote").value.toString()
+                                )
+                            )
+                        } else {
                             Log.d(TAG, "onViewCreated: other")
-                            recordsList.add(Records(
-                                datas.child("rregNO").value.toString(),
-                                datas.child("rname").value.toString(),
-                                datas.child("rmillage").value.toString(),
-                                datas.child("rstatus").value.toString(),
-                                datas.child("rcategory").value.toString(),
-                                datas.child("rstartDate").value.toString(),
-                                datas.child("rendDate").value.toString(),
-                                datas.child("rnote").value.toString()
-                            ))
+                            recordsList.add(
+                                Records(
+                                    datas.child("rregNO").value.toString(),
+                                    datas.child("rname").value.toString(),
+                                    datas.child("rmillage").value.toString(),
+                                    datas.child("rstatus").value.toString(),
+                                    datas.child("rcategory").value.toString(),
+                                    datas.child("rstartDate").value.toString(),
+                                    datas.child("rendDate").value.toString(),
+                                    datas.child("rnote").value.toString()
+                                )
+                            )
                         }
 
                     }
 
-                    updateRecycler()
+                    updateRecycler(recordsList)
 
                 }
 
@@ -162,7 +211,7 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
 
 //            withContext(Dispatchers.Main)
 //            {
-        updateRecycler()
+//        updateRecycler(recordsList)
 //            }
 //        }
 
@@ -174,6 +223,9 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
         }
         binding.dueRecords.setOnClickListener {
             navigateDue()
+        }
+        binding.reportRecords.setOnClickListener {
+            navigateReport()
         }
 
 
@@ -202,8 +254,8 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
 
     //1Day
 //Due
-    private fun updateRecycler() {
-        recordsAdapter = RecordsAdapter(requireContext(), recordsList, this)
+    private fun updateRecycler(recordsList: ArrayList<Records>) {
+        recordsAdapter = RecordsAdapter(requireContext(), recordsList, this, 2)
         binding.recyclerViewAll.adapter = recordsAdapter
 
     }
@@ -216,6 +268,16 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
                 com.awais.raza.car.app.R.id.fragment_container
             ).navigate(
                 com.awais.raza.car.app.R.id.action_dashboardFragment_to_recordFragment
+            )
+        }
+    }
+    private fun navigateReport() {
+        lifecycleScope.launchWhenStarted {
+            Navigation.findNavController(
+                requireActivity(),
+                com.awais.raza.car.app.R.id.fragment_container
+            ).navigate(
+                com.awais.raza.car.app.R.id.action_dashboardFragment_to_reportFragment
             )
         }
     }
@@ -297,7 +359,7 @@ class DashboardFragment : Fragment(), OnRecordClickListener {
                         databaseReference.child(records.rRegNO).removeValue()
                         recordsList.remove(records)
 
-                        binding.txtTotal.text="No of vehicle : ${recordsList.size}"
+                        binding.txtTotal.text = "No of vehicle : ${recordsList.size}"
 
                         recordsAdapter.notifyDataSetChanged()
                         /*val firebaseDatabase = FirebaseDatabase.getInstance()

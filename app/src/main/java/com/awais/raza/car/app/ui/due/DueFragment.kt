@@ -22,10 +22,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -135,7 +131,7 @@ class DueFragment : Fragment(), OnRecordClickListener {
     }
 
     private fun updateRecycler() {
-        recordsAdapter = RecordsAdapter(requireContext(), recordsList, this)
+        recordsAdapter = RecordsAdapter(requireContext(), recordsList, this, 2)
         binding.recyclerViewAll.adapter = recordsAdapter
     }
 
